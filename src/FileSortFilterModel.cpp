@@ -121,11 +121,21 @@ bool FileSortFilterModel::lessThan(const QModelIndex &left, const QModelIndex &r
     if (m_foldersFirst) {
         const bool leftDir = left.data(DirectoryModel::IsDirRole).toBool();
         const bool rightDir = right.data(DirectoryModel::IsDirRole).toBool();
-        if (leftDir != rightDir) {
-            // Folders lead regardless of direction, so a reversed sort flips
-            // the files without flinging the folders to the bottom.
+        const bool leftHidden = left.data(DirectoryModel::IsHiddenRole).toBool()
+            || left.data(DirectoryModel::IsBackupRole).toBool();
+        const bool rightHidden = right.data(DirectoryModel::IsHiddenRole).toBool()
+            || right.data(DirectoryModel::IsBackupRole).toBool();
+        // Three tiers: visible folders, then hidden (dirs or files), then
+        // the rest. The tiers stay fixed when the sort is reversed — same
+        // trick as folders-first below, flipped so the model's inversion
+        // keeps the groups in place while each group reverses inside.
+        const int leftRank = (leftDir && !leftHidden) ? 0 : (leftHidden ? 1 : 2);
+        const int rightRank = (rightDir && !rightHidden) ? 0 : (rightHidden ? 1 : 2);
+        if (leftRank != rightRank)
+            return m_sortDescending ? leftRank > rightRank : leftRank < rightRank;
+        // Inside the hidden tier, folders still lead files.
+        if (leftRank == 1 && leftDir != rightDir)
             return m_sortDescending ? rightDir : leftDir;
-        }
     }
 
     switch (m_sortKey) {

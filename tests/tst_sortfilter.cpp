@@ -16,6 +16,7 @@ private Q_SLOTS:
     void showHiddenRevealsThem();
     void foldersSortFirst();
     void foldersStayFirstWhenReversed();
+    void hiddenSortsImmediatelyAfterFolders();
     void sortsNamesNaturally();
     void sortsCaseInsensitively();
     void sortsBySize();
@@ -113,6 +114,33 @@ void TestSortFilter::foldersStayFirstWhenReversed()
 
     // Reversing sorts the files, but must not fling the folders to the bottom.
     QCOMPARE(visible(proxy), (QStringList{ "folder", "bbb.txt", "aaa.txt" }));
+}
+
+void TestSortFilter::hiddenSortsImmediatelyAfterFolders()
+{
+    TempTree tree;
+    tree.makeDir("mmm");
+    tree.makeDir(".hdir");
+    tree.writeFile(".afile");
+    tree.writeFile("zbackup.txt~");
+    tree.writeFile("aaa.txt");
+    tree.writeFile("zzz.txt");
+
+    DirectoryModel model;
+    FileSortFilterModel proxy;
+    proxy.setSourceModel(&model);
+    proxy.setShowHidden(true);
+    model.setPath(tree.path());
+    QTRY_COMPARE(proxy.rowCount(), 6);
+
+    // Visible folders, then hidden (folders before files), then the rest.
+    QCOMPARE(visible(proxy), (QStringList{ "mmm", ".hdir", ".afile", "zbackup.txt~",
+                                           "aaa.txt", "zzz.txt" }));
+
+    // Reversing flips each tier inside without moving the tiers themselves.
+    proxy.setSortDescending(true);
+    QCOMPARE(visible(proxy), (QStringList{ "mmm", ".hdir", "zbackup.txt~", ".afile",
+                                           "zzz.txt", "aaa.txt" }));
 }
 
 void TestSortFilter::sortsNamesNaturally()
