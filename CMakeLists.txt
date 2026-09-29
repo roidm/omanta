@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(omanta VERSION 0.1.20 LANGUAGES CXX)
+project(omanta VERSION 0.1.21 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -77,6 +77,7 @@ set(OMANTA_SOURCES
 )
 
 set_source_files_properties(qml/Colors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(qml/Fonts.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 set(OMANTA_QML_FILES
     qml/Main.qml
@@ -103,6 +104,7 @@ set(OMANTA_QML_FILES
     qml/CredentialDialog.qml
     qml/PropertiesDialog.qml
     qml/Colors.qml
+    qml/Fonts.qml
 )
 
 qt_add_executable(omanta src/main.cpp ${OMANTA_SOURCES})

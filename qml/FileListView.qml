@@ -12,7 +12,7 @@ Item {
 
     property alias currentIndex: view.currentIndex
     readonly property int iconSize: root.tab.zoom
-    readonly property int rowHeight: Math.max(Colors.rowHeight, iconSize + 12)
+    readonly property int rowHeight: Math.max(Fonts.px(Colors.rowHeight), iconSize + 12)
 
     // Label, sort key and width per column id. Width 0 marks the flex column.
     readonly property var columnMeta: ({
@@ -77,7 +77,7 @@ Item {
         // Header
         Rectangle {
             width: parent.width
-            height: 28
+            height: Fonts.px(28)
             color: Colors.chrome
 
             Row {
@@ -105,7 +105,7 @@ Item {
                                 textFormat: Text.PlainText
                                 text: meta.label
                                 color: root.tab.sortKey === meta.sortKey ? Colors.text : Colors.textDim
-                                font.pixelSize: 12
+                                font.pixelSize: Fonts.px(15)
                                 elide: Text.ElideRight
                             }
 
@@ -114,7 +114,7 @@ Item {
                                 visible: root.tab.sortKey === meta.sortKey
                                 text: root.tab.sortDescending ? "▾" : "▴"
                                 color: Colors.accent
-                                font.pixelSize: 10
+                                font.pixelSize: Fonts.px(12)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -137,7 +137,7 @@ Item {
 
         Item {
             width: parent.width
-            height: parent.height - 28
+            height: parent.height - Fonts.px(28)
 
             // Empty space accepts drops into the folder being viewed. Behind
             // the list, so folder rows' own DropAreas win where they overlap.
@@ -238,7 +238,7 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: row.expanded ? "▾" : "▸"
                                     color: row.expanded ? Colors.accent : Colors.textDim
-                                    font.pixelSize: 10
+                                    font.pixelSize: Fonts.px(12)
                                 }
                             }
 
@@ -279,7 +279,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: row.displayName
                                 color: root.tab.isSelected(row.name) ? Colors.selectionText : Colors.text
-                                font.pixelSize: 13
+                                font.pixelSize: Fonts.px(16)
                                 elide: Text.ElideRight
                                 width: Math.max(0, Math.min(implicitWidth,
                                                 nameCell.width - root.iconSize - 8
@@ -300,7 +300,7 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                             text: root.cellText(modelData, row)
                             color: Colors.textDim
-                            font.pixelSize: 12
+                            font.pixelSize: Fonts.px(15)
                             elide: Text.ElideRight
                         }
                     }

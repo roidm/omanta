@@ -753,7 +753,7 @@ FocusScope {
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("No Known Connections")
             color: Colors.text
-            font.pixelSize: 20
+            font.pixelSize: Fonts.px(24)
             font.bold: true
         }
 
@@ -762,7 +762,7 @@ FocusScope {
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Enter an address to connect to a network location.")
             color: Colors.textDim
-            font.pixelSize: 13
+            font.pixelSize: Fonts.px(16)
         }
     }
 }

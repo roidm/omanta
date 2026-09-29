@@ -15,8 +15,9 @@ class QFileSystemWatcher;
 //     at ~/.local/state/omarchy/current/theme/colors.toml. When it exists, the
 //     palette IS the theme — every colour role below comes from it, and a theme
 //     switch is picked up live by watching the file.
-//  2. org.freedesktop.portal.Settings for dark/light and text scale — the same
-//     mechanism omacalc uses. On a non-Omarchy system this is all there is, and
+//  2. org.freedesktop.portal.Settings for dark/light (org.freedesktop.appearance
+//     / color-scheme) and text scale (org.gnome.desktop.interface /
+//     text-scaling-factor) — the same mechanism omacalc uses. On a non-Omarchy system this is all there is, and
 //     the QML side falls back to its built-in palette.
 //
 // colors.toml comes in two shapes: stock themes carry the full set (mode,
@@ -64,6 +65,13 @@ public:
     // The flat `key = "value"` subset of TOML that colors.toml uses. Exposed
     // for the unit test; deliberately not a general TOML parser.
     static QHash<QString, QString> parseColorsToml(const QString &text);
+
+    // GNOME's text-scaling-factor is the desktop-wide knob omarchy drives
+    // from `omarchy display text size` (12px == 1.0). Exposed for the unit
+    // test; same rule omacalc uses.
+    static qreal sanitizeTextScale(qreal scale);
+    static QString textScaleNamespace();
+    static QString textScaleKey();
 
 Q_SIGNALS:
     void darkModeChanged();

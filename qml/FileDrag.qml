@@ -144,7 +144,7 @@ Item {
             height: parent.height
             text: root.itemCount > 1 ? qsTr("%1 items").arg(root.itemCount) : root.fileName
             textFormat: Text.PlainText
-            font.pixelSize: 13
+            font.pixelSize: Fonts.px(16)
             color: Colors.text
             elide: Text.ElideMiddle
             verticalAlignment: Text.AlignVCenter

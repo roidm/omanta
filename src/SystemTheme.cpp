@@ -20,13 +20,15 @@ constexpr const char *kPortalService = "org.freedesktop.portal.Desktop";
 constexpr const char *kPortalPath = "/org/freedesktop/portal/desktop";
 constexpr const char *kPortalSettings = "org.freedesktop.portal.Settings";
 constexpr const char *kAppearance = "org.freedesktop.appearance";
+constexpr const char *kGnomeInterface = "org.gnome.desktop.interface";
+constexpr const char *kTextScaleKey = "text-scaling-factor";
 
-QDBusMessage readOne(const QString &key)
+QDBusMessage readOne(const QString &nameSpace, const QString &key)
 {
     QDBusMessage message = QDBusMessage::createMethodCall(
         QLatin1String(kPortalService), QLatin1String(kPortalPath),
         QLatin1String(kPortalSettings), QStringLiteral("ReadOne"));
-    message << QLatin1String(kAppearance) << key;
+    message << nameSpace << key;
     return message;
 }
 
@@ -87,10 +89,30 @@ void SystemTheme::setDarkMode(bool dark)
 
 void SystemTheme::setTextScale(qreal scale)
 {
-    if (qFuzzyCompare(m_textScale, scale) || scale <= 0)
+    if (scale <= 0)
+        return;
+    scale = qBound(0.5, scale, 3.0);
+    if (qFuzzyCompare(m_textScale, scale))
         return;
     m_textScale = scale;
     Q_EMIT textScaleChanged();
+}
+
+qreal SystemTheme::sanitizeTextScale(qreal scale)
+{
+    if (!(scale > 0))
+        return 1.0;
+    return qBound(0.5, scale, 3.0);
+}
+
+QString SystemTheme::textScaleNamespace()
+{
+    return QString::fromLatin1(kGnomeInterface);
+}
+
+QString SystemTheme::textScaleKey()
+{
+    return QString::fromLatin1(kTextScaleKey);
 }
 
 void SystemTheme::applyColorScheme(uint scheme)
@@ -107,7 +129,8 @@ void SystemTheme::applyColorScheme(uint scheme)
 
 void SystemTheme::requestPortalDarkMode()
 {
-    auto pending = QDBusConnection::sessionBus().asyncCall(readOne(QStringLiteral("color-scheme")));
+    auto pending = QDBusConnection::sessionBus().asyncCall(
+        readOne(QLatin1String(kAppearance), QStringLiteral("color-scheme")));
     auto *watcher = new QDBusPendingCallWatcher(pending, this);
     connect(watcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *call) {
         QDBusPendingReply<QDBusVariant> reply = *call;
@@ -119,7 +142,8 @@ void SystemTheme::requestPortalDarkMode()
 
 void SystemTheme::requestPortalTextScale()
 {
-    auto pending = QDBusConnection::sessionBus().asyncCall(readOne(QStringLiteral("text-scaling-factor")));
+    auto pending = QDBusConnection::sessionBus().asyncCall(
+        readOne(QLatin1String(kGnomeInterface), QLatin1String(kTextScaleKey)));
     auto *watcher = new QDBusPendingCallWatcher(pending, this);
     connect(watcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *call) {
         QDBusPendingReply<QDBusVariant> reply = *call;
@@ -135,13 +159,18 @@ void SystemTheme::requestPortalTextScale()
 void SystemTheme::handlePortalSettingChanged(const QString &nameSpace, const QString &key,
                                              const QDBusVariant &value)
 {
+    if (key == QLatin1String(kTextScaleKey)) {
+        if (nameSpace != QLatin1String(kGnomeInterface))
+            return;
+        setTextScale(value.variant().toDouble());
+        return;
+    }
+
     if (nameSpace != QLatin1String(kAppearance))
         return;
 
     if (key == QLatin1String("color-scheme"))
         applyColorScheme(value.variant().toUInt());
-    else if (key == QLatin1String("text-scaling-factor"))
-        setTextScale(value.variant().toDouble());
 }
 
 // ---- Omarchy theme colours -------------------------------------------------

@@ -17,6 +17,7 @@
 #include <QDBusInterface>
 #include <QDir>
 #include <QFileInfo>
+#include <QFont>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -127,6 +128,19 @@ int main(int argc, char *argv[])
     Application application(&engine);
     Platform platform;
     SystemTheme systemTheme;
+
+    // Carry the desktop's text scale into the default font so the chrome
+    // that inherits it (TextFields, ComboBoxes, menus, dialogs) grows along
+    // with the explicit Fonts.px() sizes. Same mechanism omacalc uses.
+    const qreal basePointSize = app.font().pointSizeF() > 0 ? app.font().pointSizeF() : 9.0;
+    const auto applyInterfaceFont = [&app, basePointSize](qreal textScale) {
+        QFont scaled = app.font();
+        scaled.setPointSizeF(basePointSize * textScale);
+        app.setFont(scaled);
+    };
+    applyInterfaceFont(systemTheme.textScale());
+    QObject::connect(&systemTheme, &SystemTheme::textScaleChanged, &app,
+                     [&systemTheme, applyInterfaceFont] { applyInterfaceFont(systemTheme.textScale()); });
 
     // Registered under their own URI, never into "Omanta". Mixing manual
     // registrations into a URI owned by qt_add_qml_module is unsupported, and
