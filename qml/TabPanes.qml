@@ -79,7 +79,7 @@ FocusScope {
                     anchors.verticalCenter: parent.verticalCenter
                     text: cell.tab.title
                     color: cell.isActive ? Colors.text : Colors.textDim
-                    font.pixelSize: 12
+                    font.pixelSize: Fonts.px(15)
                     elide: Text.ElideMiddle
                 }
 

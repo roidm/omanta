@@ -41,7 +41,7 @@ Item {
         color: root.active ? Colors.selectionText
              : root.enabled ? Colors.text : Colors.textDim
         opacity: root.enabled ? 1.0 : 0.4
-        font.pixelSize: root.symbolSize
+        font.pixelSize: Fonts.px(root.symbolSize)
     }
 
     Image {

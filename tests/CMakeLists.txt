@@ -51,6 +51,11 @@ omanta_test(tst_fileoperations
 omanta_test(tst_qmltext)
 target_compile_definitions(tst_qmltext PRIVATE OMANTA_QML_DIR="${CMAKE_SOURCE_DIR}/qml")
 
+# Every font.pixelSize must go through Fonts.px() so the desktop text scale
+# is honoured. Same shape as tst_qmltext: a source scan, milliseconds.
+omanta_test(tst_qmlfonts)
+target_compile_definitions(tst_qmlfonts PRIVATE OMANTA_QML_DIR="${CMAKE_SOURCE_DIR}/qml")
+
 omanta_test(tst_thumbnails
     ${CMAKE_SOURCE_DIR}/src/ThumbnailProvider.cpp
 )

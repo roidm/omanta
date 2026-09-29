@@ -142,7 +142,8 @@ static QQuickItem *findFileRow(QQuickItem *item, const QString &path)
 }
 
 static void checkListIconSizing(QQuickWindow *window, QQuickItem *tab,
-                                const TempTree &tree, const QStringList &names)
+                                const TempTree &tree, const QStringList &names,
+                                double textScale)
 {
     QVERIFY(window);
     window->requestActivate();
@@ -154,14 +155,16 @@ static void checkListIconSizing(QQuickWindow *window, QQuickItem *tab,
     QTRY_VERIFY(findItem(tab, "previewPath", path));
     auto *preview = findItem(tab, "previewPath", path);
     QCOMPARE(preview->width(), 18);
-    QCOMPARE(findFileRow(tab, path)->height(), 30);
+    // Row base height follows the system text scale (Fonts.px(Colors.rowHeight)).
+    const int scaledBase = qRound(30 * textScale);
+    QCOMPARE(findFileRow(tab, path)->height(), scaledBase);
 
     QTest::keyClick(window, Qt::Key_Equal, Qt::ControlModifier);
     QTRY_COMPARE(preview->width(), 24);
     QTest::keyClick(window, Qt::Key_Plus, Qt::ControlModifier);
     QTRY_COMPARE(preview->width(), 32);
     QCOMPARE(preview->property("sourceSize").toSize(), QSize(32, 32));
-    QTRY_COMPARE(findFileRow(tab, path)->height(), 44);
+    QTRY_COMPARE(findFileRow(tab, path)->height(), qMax(scaledBase, 44));
     for (int i = 0; i < 8; ++i)
         QTest::keyClick(window, Qt::Key_Equal, Qt::ControlModifier);
     QTRY_COMPARE(preview->width(), 64);
@@ -673,7 +676,8 @@ void TestQmlViews::selectionAndVirtualDelegates()
     checkSelectedNameShown(tab, names.first(), names.at(1));
     if (QTest::currentTestFailed())
         return;
-    checkListIconSizing(qobject_cast<QQuickWindow *>(window), tab, tree, names);
+    checkListIconSizing(qobject_cast<QQuickWindow *>(window), tab, tree, names,
+                        theme.textScale());
     if (QTest::currentTestFailed())
         return;
     checkDragPreviews(qobject_cast<QQuickWindow *>(window), tab, tree, names);

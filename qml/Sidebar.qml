@@ -113,7 +113,7 @@ Rectangle {
 
             width: list.width - 12
             x: 6
-            height: 30
+            height: Fonts.px(30)
             radius: Colors.radius
             color: current ? Colors.selection
                  : rowDrop.containsDrag ? Colors.hover
@@ -153,7 +153,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 text: row.name
                 color: row.current ? Colors.selectionText : row.mountable ? Colors.textDim : Colors.text
-                font.pixelSize: 13
+                font.pixelSize: Fonts.px(16)
                 elide: Text.ElideRight
             }
 
@@ -167,7 +167,7 @@ Rectangle {
                 visible: row.ejectable
                 text: "⏏"
                 color: ejectMouse.containsMouse ? Colors.accent : Colors.textDim
-                font.pixelSize: 12
+                font.pixelSize: Fonts.px(15)
 
                 MouseArea {
                     id: ejectMouse
@@ -295,7 +295,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Operations complete")
                     color: Colors.textDim
-                    font.pixelSize: 12
+                    font.pixelSize: Fonts.px(15)
                 }
             }
 
@@ -319,7 +319,7 @@ Rectangle {
                         width: parent.width - 22
                         text: modelData.shortStatus
                         color: modelData.state === "running" ? Colors.text : Colors.textDim
-                        font.pixelSize: 12
+                        font.pixelSize: Fonts.px(15)
                         elide: Text.ElideMiddle
                     }
                 }
@@ -370,7 +370,7 @@ Rectangle {
                     visible: FileOperations.operations.length === 0
                     text: qsTr("All operations complete")
                     color: Colors.textDim
-                    font.pixelSize: 12
+                    font.pixelSize: Fonts.px(15)
                 }
 
                 Repeater {
@@ -393,7 +393,7 @@ Rectangle {
                                       ? modelData.label + qsTr(" — waiting")
                                       : modelData.label
                                 color: Colors.text
-                                font.pixelSize: 12
+                                font.pixelSize: Fonts.px(15)
                                 elide: Text.ElideRight
                             }
 
@@ -404,7 +404,7 @@ Rectangle {
                                 text: "✕"
                                 color: cancelOneMouse.containsMouse
                                        ? Colors.text : Colors.textDim
-                                font.pixelSize: 12
+                                font.pixelSize: Fonts.px(15)
 
                                 MouseArea {
                                     id: cancelOneMouse
@@ -440,7 +440,7 @@ Rectangle {
                             width: parent.width
                             text: modelData.detail || ""
                             color: Colors.textDim
-                            font.pixelSize: 11
+                            font.pixelSize: Fonts.px(13)
                             elide: Text.ElideMiddle
                         }
 
@@ -457,7 +457,7 @@ Rectangle {
                             width: parent.width
                             text: line
                             color: Colors.textDim
-                            font.pixelSize: 11
+                            font.pixelSize: Fonts.px(13)
                             elide: Text.ElideRight
                         }
                     }

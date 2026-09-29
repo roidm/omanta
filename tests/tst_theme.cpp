@@ -18,6 +18,9 @@ private Q_SLOTS:
     void parsesFlatToml();
     void parseIgnoresJunk();
 
+    void textScaleSanitization();
+    void textScaleNamespace();
+
     void missingFileMeansNoThemeColors();
     void minimalFormatDerivesEveryRole();
     void fullFormatUsesAuthoredRoles();
@@ -184,6 +187,32 @@ void TestTheme::missingAncestorsAreWatched()
     colors.close();
     QTRY_VERIFY_WITH_TIMEOUT(theme.hasThemeColors(), 5000);
     QCOMPARE(theme.accentColor(), QColor("#69c3ff"));
+}
+
+void TestTheme::textScaleSanitization()
+{
+    // GNOME's text-scaling-factor is the desktop-wide knob omarchy drives
+    // from `omarchy display text size`. Nonsense is ignored, the rest is
+    // clamped to the range GNOME allows — same rule omacalc uses.
+    QCOMPARE(SystemTheme::sanitizeTextScale(1.0), 1.0);
+    QCOMPARE(SystemTheme::sanitizeTextScale(1.1799999999999999), 1.1799999999999999);
+    QCOMPARE(SystemTheme::sanitizeTextScale(0.5), 0.5);
+    QCOMPARE(SystemTheme::sanitizeTextScale(3.0), 3.0);
+    QCOMPARE(SystemTheme::sanitizeTextScale(10.0), 3.0);
+    QCOMPARE(SystemTheme::sanitizeTextScale(0.1), 0.5);
+    QCOMPARE(SystemTheme::sanitizeTextScale(0.0), 1.0);
+    QCOMPARE(SystemTheme::sanitizeTextScale(-2.0), 1.0);
+}
+
+void TestTheme::textScaleNamespace()
+{
+    // Regression: the portal exposes text-scaling-factor under
+    // org.gnome.desktop.interface, not org.freedesktop.appearance.
+    // Reading it from the appearance namespace never answers, so the scale
+    // stuck at 1.0 while the desktop grew around it.
+    QCOMPARE(SystemTheme::textScaleNamespace(),
+             QStringLiteral("org.gnome.desktop.interface"));
+    QCOMPARE(SystemTheme::textScaleKey(), QStringLiteral("text-scaling-factor"));
 }
 
 QTEST_GUILESS_MAIN(TestTheme)

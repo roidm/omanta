@@ -11,7 +11,7 @@ Item {
     property alias currentIndex: view.currentIndex
     readonly property int iconSize: root.tab.zoom
     readonly property int cellW: iconSize + 46
-    readonly property int cellH: iconSize + 52 + captions.length * 14
+    readonly property int cellH: iconSize + 52 + captions.length * Fonts.px(14)
 
     // Nautilus's graded caption reveal — "More information will appear when
     // zooming closer": none at 32–48, one at 64–80, two at 96–112, all
@@ -176,7 +176,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     text: cell.displayName
                     color: root.tab.isSelected(cell.name) ? Colors.selectionText : Colors.text
-                    font.pixelSize: 12
+                    font.pixelSize: Fonts.px(15)
                     elide: Text.ElideRight
                     maximumLineCount: 2
                     wrapMode: Text.Wrap
@@ -194,7 +194,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         text: root.captionText(modelData, cell)
                         color: root.tab.isSelected(cell.name) ? Colors.selectionText : Colors.textDim
-                        font.pixelSize: 10
+                        font.pixelSize: Fonts.px(12)
                         elide: Text.ElideMiddle
                     }
                 }
@@ -231,7 +231,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     text: cell.displayName
                     color: Colors.selectionText
-                    font.pixelSize: 12
+                    font.pixelSize: Fonts.px(15)
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
             }
